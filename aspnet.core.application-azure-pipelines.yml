@@ -1,0 +1,60 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- none
+
+pool:
+  vmImage: 'vs2017-win2016'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  buidFramework: 'netcoreapp2.2'
+
+steps:
+- task: NuGetToolInstaller@1
+  inputs:
+    checkLatest: true
+
+- task: NuGetAuthenticate@0
+
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '2.2.300'
+    includePreviewVersions: true
+    performMultiLevelLookup: true    
+
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+    vstsFeed: '43386ad7-69db-4cd6-8dbe-d5e020c08bd7/bdc37497-2f82-4a21-86c8-0231a4b36541'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --framework $(buidFramework)'
+
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '**/filename.csproj'
+    arguments: '-o $(Build.ArtifactStagingDirectory) -f $(buidFramework) -r win-x64 -c $(buildConfiguration) --self-contained true'
+    modifyOutputPath: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'ArtifactName'
+    publishLocation: 'Container'

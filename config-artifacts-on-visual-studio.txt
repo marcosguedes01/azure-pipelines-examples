@@ -1,0 +1,16 @@
+Machine setup
+On the Tools menu, select Options > NuGet Package Manager > Package Sources. Select the green plus in the upper-right corner and enter the name and source URL below.
+
+Name
+NameFromPackages
+
+Source
+https://pkgs.dev.azure.com/.../_packaging/.../nuget/v3/index.json
+
+Note: You need to do this on every machine that needs access to your packages. Use the NuGet.exe instructions if you want to complete setup once and check it into your repository.
+
+Restore packages
+On the Tools menu, select Options > NuGet Package Manager > Package Manager Console. Find a package you want to use, copy the Package Manager command, and paste it in the Package Manager Console.
+
+For example:
+Install-Package NUnit
